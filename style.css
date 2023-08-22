@@ -12,7 +12,7 @@ header {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.game {
+#game {
     height: 500px;
     width: 500px;
     display: grid;
