@@ -19,21 +19,28 @@ const Gameboard = (() => {
 
     const update = (index, value) => {
         gameboard[index] = value
-        console.log(gameboard)
+    }
+
+    const gameResult = (winner) => {
+        const result = document.getElementById('result')
+        result.innerHTML = `${winner}`
     }
 
     const getGameboard = () => gameboard;
     return {
-        render, getGameboard, update
+        render, getGameboard, update, gameResult
     }
 })();
 
 const Game = (() => {
     let players = ['X', 'O']
     let playerIndex = 0
-    let gameActive;
+    let gameActive = false;
 
     const unitClick = (event) => {
+        if(gameActive){
+            return
+        }
         let index = event.target.id
         if(event.target.innerHTML !== '') {
             return
@@ -42,12 +49,59 @@ const Game = (() => {
         }
         Gameboard.update(index, players[playerIndex])
 
+        if(winningComb(Gameboard.getGameboard())){
+            Gameboard.gameResult(players[playerIndex] + 'Won!')
+            gameActive = true
+        } else if(noWinners(Gameboard.getGameboard())) {
+            Gameboard.gameResult("I's a tie.")
+            gameActive = true
+        }
+
         playerIndex = playerIndex === 0 ? 1 : 0;
     }
 
+    const winningComb  = (gameboard) => {
+        const combinations = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ]
+
+        for(let i = 0; i < combinations.length; i++){
+            const [a, b, c] = combinations[i]
+            if(gameboard[a] && gameboard[a] === gameboard[b] && gameboard[a] === gameboard[c]){
+                return true
+            }
+        }
+        return false
+    }
+
+    const noWinners = (gameboard) => {
+        return gameboard.every(cell => cell !== '')
+    }
+
+    const reset = () => {
+        for(let i = 0; i < 9; i++){
+            Gameboard.update(i, "")
+        }
+    }
+
     return {
-        unitClick
+        unitClick, reset
     }
 })();
 
-Gameboard.render()
+const restart = document.getElementById('reset') 
+restart.addEventListener('click', () => {
+    Game.reset();
+})
+
+const newGame = document.getElementById('new-game')
+newGame.addEventListener('click', () => {
+    Gameboard.render()
+})
