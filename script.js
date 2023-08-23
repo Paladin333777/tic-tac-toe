@@ -26,9 +26,10 @@ const Gameboard = (() => {
         result.innerHTML = `${winner}`
     }
 
+
     const getGameboard = () => gameboard;
     return {
-        render, getGameboard, update, gameResult
+        render, getGameboard, update, gameResult, gameboard
     }
 })();
 
@@ -85,23 +86,26 @@ const Game = (() => {
         return gameboard.every(cell => cell !== '')
     }
 
-    const reset = () => {
-        for(let i = 0; i < 9; i++){
-            Gameboard.update(i, "")
-        }
+    const resetGame = () => {
+        const resetButton = document.getElementById('reset')
+        resetButton.addEventListener("click", () => {
+            for(let i = 0; i < 9; i++){
+                Gameboard.gameboard[i] = "";
+            }
+            Gameboard.gameResult("")
+            const squares = document.querySelectorAll('.cell')
+            squares.forEach((square) => {
+                square.innerHTML = "";
+            })
+            gameActive = false
+        })
     }
 
     return {
-        unitClick, reset
+        unitClick, resetGame
     }
 })();
 
-const restart = document.getElementById('reset') 
-restart.addEventListener('click', () => {
-    Game.reset();
-})
 
-const newGame = document.getElementById('new-game')
-newGame.addEventListener('click', () => {
-    Gameboard.render()
-})
+Gameboard.render()
+Game.resetGame()
